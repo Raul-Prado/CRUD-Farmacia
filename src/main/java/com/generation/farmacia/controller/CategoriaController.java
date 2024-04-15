@@ -53,6 +53,10 @@ public class CategoriaController {
     /*criar uma nova categoria*/
     @PostMapping
     public ResponseEntity<Categoria> post(@Valid @RequestBody Categoria categoria) {
+    	// Verifica se a categoria do produto é nula
+        if (categoria.getProduto() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaRepository.save(categoria));
     }
     

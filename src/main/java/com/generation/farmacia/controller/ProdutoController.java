@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.generation.farmacia.model.Categoria;
 import com.generation.farmacia.model.Produto;
+import com.generation.farmacia.repository.CategoriaRepository;
 import com.generation.farmacia.repository.ProdutoRepository;
 
 import jakarta.validation.Valid;
@@ -31,6 +31,9 @@ public class ProdutoController {
 
 	@Autowired
 	private ProdutoRepository produtoRepository;
+	
+	@Autowired
+	private CategoriaRepository categoriaRepository;
 	
 	/*buscar todas as categorias*/
     @GetMapping
@@ -58,7 +61,10 @@ public class ProdutoController {
         if (produto.getCategoria() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produto));
+        if(categoriaRepository.existsById(produto.getCategoria().getId())) {
+    		return ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produto));
+        }
+    		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoria não existe!", null);
     }
     
     /*atualizar uma categoria existente*/
